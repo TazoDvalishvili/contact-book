@@ -50,7 +50,7 @@ public class ContactController {
         }
     }
 
-    @GetMapping("search-contact")
+    @PostMapping("search-contact")
     public ResponseEntity<?> searchContact(@RequestBody ContactDTO contactDTO,
                                            @RequestParam(value = "limit", required = false, defaultValue = "5") int size,
                                            @RequestParam(value = "page", required = false, defaultValue = "1") int page) {
