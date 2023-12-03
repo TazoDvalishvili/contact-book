@@ -39,7 +39,7 @@ public class ContactController {
     }
 
     @GetMapping("get-contact-book")
-    public ResponseEntity<?> getContactBook(@RequestParam(value = "limit", required = false, defaultValue = "25") int size,
+    public ResponseEntity<?> getContactBook(@RequestParam(value = "limit", required = false, defaultValue = "5") int size,
                                             @RequestParam(value = "page", required = false, defaultValue = "1") int page) {
         try {
             List<ContactDTO> response = contactService.getUserContactBook(PageRequest.of(page - 1,
@@ -52,7 +52,7 @@ public class ContactController {
 
     @GetMapping("search-contact")
     public ResponseEntity<?> searchContact(@RequestBody ContactDTO contactDTO,
-                                           @RequestParam(value = "limit", required = false, defaultValue = "25") int size,
+                                           @RequestParam(value = "limit", required = false, defaultValue = "5") int size,
                                            @RequestParam(value = "page", required = false, defaultValue = "1") int page) {
         try {
             List<ContactDTO> response = contactService.searchContact(contactDTO, PageRequest.of(page - 1,
