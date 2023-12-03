@@ -17,7 +17,6 @@ import lombok.*;
 @NoArgsConstructor
 public class ContactDTO {
     private Long id;
-    private Long creatorId;
     private String firstName;
     private String lastName;
     private String phoneNumber;

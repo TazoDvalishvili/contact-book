@@ -5,16 +5,23 @@ import com.project.contactbook.dto.AuthDTO;
 import com.project.contactbook.dto.UserDTO;
 import com.project.contactbook.model.User;
 import com.project.contactbook.repository.UserRepository;
+import com.sun.jdi.InternalException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+/**
+ * UserServiceImpl implements UserService interface.
+ *
+ * @author Tazo Dvalishvili
+ * @version 1.0
+ */
 
 @Service
 @Slf4j
@@ -35,11 +42,15 @@ public class UserServiceImpl implements UserService{
             log.error("Username: " + userDTO.getUsername() + " already exists!");
             throw new RuntimeException("Username: " + userDTO.getUsername() + " already exists!");
         }
-        User user = new User();
-        user.setUsername(userDTO.getUsername());
-        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        user = userRepository.save(user);
-        return new UserDTO(user.getId(), user.getUsername(), user.getPassword());
+        try {
+            User user = new User();
+            user.setUsername(userDTO.getUsername());
+            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            user = userRepository.save(user);
+            return new UserDTO(user.getId(), user.getUsername(), user.getPassword());
+        } catch (Exception e) {
+            throw new InternalException("Cannot register provided user");
+        }
     }
 
     @Override
@@ -50,6 +61,16 @@ public class UserServiceImpl implements UserService{
                     .accessToken(jwtService.GenerateToken(userDTO.getUsername())).build();
         } else {
             throw new UsernameNotFoundException("Invalid username or password");
+        }
+    }
+
+    @Override
+    public User getCurrentUser() {
+        try {
+            String currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();
+            return userRepository.findByUsername(currentUserName);
+        } catch (Exception e) {
+            throw new InternalException("Cannot get user from session");
         }
     }
 }
